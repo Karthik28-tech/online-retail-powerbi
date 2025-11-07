@@ -1,0 +1,16 @@
+{
+  "name": "Dark Gradient Executive",
+  "dataColors": [
+    "#00B4DB",
+    "#0083B0",
+    "#FDC830",
+    "#F37335",
+    "#56ab2f",
+    "#a8e063",
+    "#8E2DE2",
+    "#4A00E0"
+  ],
+  "background": "#0E1117",
+  "foreground": "#FFFFFF",
+  "tableAccent": "#00B4DB"
+}

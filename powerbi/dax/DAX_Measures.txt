@@ -1,0 +1,82 @@
+-- Power BI DAX Measures
+
+Total Revenue = SUM('OnlineRetail_Cleaned'[Revenue])
+
+Total Quantity Sold = SUM('OnlineRetail_Cleaned'[Quantity])
+
+Top Country by Revenue =
+VAR TopCountry =
+    TOPN(
+        1,
+        SUMMARIZE(
+            'OnlineRetail_Cleaned',
+            'OnlineRetail_Cleaned'[Country],
+            "Revenue", SUM('OnlineRetail_Cleaned'[Revenue])
+        ),
+        [Revenue],
+        DESC
+    )
+RETURN
+FIRSTNONBLANK(
+    SELECTCOLUMNS(TopCountry, "Country", 'OnlineRetail_Cleaned'[Country]),
+    1
+)
+
+Top Customer by Revenue =
+VAR TopCustomer =
+    TOPN(
+        1,
+        SUMMARIZE(
+            'OnlineRetail_Cleaned',
+            'OnlineRetail_Cleaned'[CustomerID],
+            "Revenue", SUM('OnlineRetail_Cleaned'[Revenue])
+        ),
+        [Revenue],
+        DESC
+    )
+RETURN
+FIRSTNONBLANK(
+    SELECTCOLUMNS(TopCustomer, "CustomerID", 'OnlineRetail_Cleaned'[CustomerID]),
+    1
+)
+
+Total Revenue (2011) =
+CALCULATE(
+    [Total Revenue],
+    FILTER('OnlineRetail_Cleaned', YEAR('OnlineRetail_Cleaned'[InvoiceDate]) = 2011)
+)
+
+Total Quantity Sold (2011) =
+CALCULATE(
+    [Total Quantity Sold],
+    FILTER('OnlineRetail_Cleaned', YEAR('OnlineRetail_Cleaned'[InvoiceDate]) = 2011)
+)
+
+Total Revenue YTD =
+CALCULATE([Total Revenue], DATESYTD('OnlineRetail_Cleaned'[InvoiceDate]))
+
+Total Quantity YTD =
+CALCULATE([Total Quantity Sold], DATESYTD('OnlineRetail_Cleaned'[InvoiceDate]))
+
+Total Quantity (Excluding UK) =
+CALCULATE([Total Quantity Sold], 'OnlineRetail_Cleaned'[Country] <> "United Kingdom")
+
+Top Country by Quantity =
+VAR TopQ =
+    TOPN(
+        1,
+        SUMMARIZE('OnlineRetail_Cleaned','OnlineRetail_Cleaned'[Country],"Qty",[Total Quantity Sold]),
+        [Qty], DESC
+    )
+RETURN
+FIRSTNONBLANK(SELECTCOLUMNS(TopQ,"Country",'OnlineRetail_Cleaned'[Country]),1)
+
+Highest Quantity Value =
+VAR TopQ =
+    TOPN(
+        1,
+        SUMMARIZE('OnlineRetail_Cleaned','OnlineRetail_Cleaned'[Country],"Qty",[Total Quantity Sold]),
+        [Qty], DESC
+    )
+RETURN
+SUMX(TopQ,[Total Quantity Sold])
